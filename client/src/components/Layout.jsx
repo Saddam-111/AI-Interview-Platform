@@ -10,10 +10,11 @@ import {
   Menu, 
   X,
   Bot,
-  GraduationCap
+  GraduationCap,
+  LogOut,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import ThemeToggle from './ui/ThemeToggle';
 
 const Layout = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,82 +33,77 @@ const Layout = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex">
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-64 bg-white dark:bg-slate-800 border-r border-gray-100 dark:border-slate-700 fixed h-screen flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-gray-100 dark:border-slate-700">
-          <Link to="/home" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
-              <Bot className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">AI Interview</span>
-              <p className="text-xs text-gray-500 dark:text-slate-400">Platform</p>
-            </div>
-          </Link>
-        </div>
-        
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`
-                relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                ${isActive(item.path) 
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25' 
-                  : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
-                }
-              `}
-            >
-              <item.icon className="w-5 h-5" />
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
+    <div className="min-h-screen bg-[#030303] relative">
+      {/* Background ambient effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          className="orb w-[400px] h-[400px] bg-violet-500/10 blur-[80px] absolute top-0 right-1/4"
+        />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.2 }}
+          className="orb w-[300px] h-[300px] bg-cyan-500/10 blur-[60px] absolute bottom-1/4 left-1/4"
+        />
+      </div>
 
-        {/* User Section */}
-        <div className="p-4 border-t border-gray-100 dark:border-slate-700">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold shadow-md">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-gray-900 dark:text-white truncate">{user?.name}</p>
-              <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{user?.email}</p>
-            </div>
+      {/* Fixed Navigation Pill */}
+      <motion.nav 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[672px] px-2 sm:px-4"
+      >
+        <div className="glass rounded-full px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between">
+          <Link to="/home" className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 sm:w-4 h-3 sm:h-4 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500" />
+            <span className="font-serif text-base sm:text-lg text-white">Synapse</span>
+          </Link>
+          
+          <div className="hidden lg:flex items-center gap-1">
+            {navItems.slice(0, 4).map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`
+                  px-4 py-2 rounded-full text-sm transition-all duration-300
+                  ${isActive(item.path) 
+                    ? 'bg-white/10 text-white' 
+                    : 'text-white/50 hover:text-white hover:bg-white/5'
+                  }
+                `}
+              >
+                {item.label}
+              </Link>
+            ))}
           </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
+          
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="hidden lg:flex items-center gap-2">
+              <Link 
+                to="/profile"
+                className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/5 transition-all"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+              <button
+                onClick={logout}
+                className="p-2 rounded-full text-white/50 hover:text-white hover:bg-white/5 transition-all"
+                title="Logout"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
             <button
-              onClick={logout}
-              className="flex-1 py-2.5 px-4 rounded-xl border-2 border-gray-200 dark:border-slate-600 text-gray-700 dark:text-slate-300 hover:bg-gray-800 hover:text-white dark:hover:bg-white dark:hover:text-slate-900 transition-all text-sm font-medium"
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden p-2 rounded-full text-white/50 hover:text-white hover:bg-white/5 transition-all"
             >
-              Logout
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
-      </aside>
-
-      {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-slate-800">
-        <div className="flex items-center justify-between h-16 px-4">
-          <Link to="/home" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">AI Interview</span>
-          </Link>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
+      </motion.nav>
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -116,36 +112,36 @@ const Layout = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="md:hidden fixed top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800"
+            className="md:hidden fixed top-20 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[400px] glass rounded-3xl p-4"
           >
-            <div className="px-4 py-4 space-y-2">
+            <div className="space-y-2">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsOpen(false)}
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
+                    flex items-center gap-3 px-4 py-3 rounded-xl transition-colors
                     ${isActive(item.path) 
-                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
-                      : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'
+                      ? 'bg-white/10 text-white' 
+                      : 'text-white/50 hover:text-white hover:bg-white/5'
                     }
                   `}
                 >
                   <item.icon className="w-5 h-5" />
-                  {item.label}
+                  <span>{item.label}</span>
                 </Link>
               ))}
-              <div className="pt-4 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between">
-                <ThemeToggle />
+              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
                 <button
                   onClick={() => {
                     logout();
                     setIsOpen(false);
                   }}
-                  className="text-sm text-red-500 hover:text-red-600"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/50 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  Logout
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
                 </button>
               </div>
             </div>
@@ -154,12 +150,12 @@ const Layout = () => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8">
+      <main className="pt-28 pb-8 px-4 md:px-8">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
         >
           <Outlet />
         </motion.div>

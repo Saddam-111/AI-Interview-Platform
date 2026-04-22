@@ -7,8 +7,6 @@ import {
 } from 'lucide-react';
 import { interviewAPI, reportAPI } from '../utils/api';
 import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import Select from '../components/ui/Select';
 
 const Interview = () => {
   const { id } = useParams();
@@ -148,11 +146,11 @@ const Interview = () => {
 
   const getRoundColor = (round) => {
     switch (round) {
-      case 'assessment': return 'from-blue-500 to-cyan-500';
-      case 'coding': return 'from-green-500 to-emerald-500';
+      case 'assessment': return 'from-violet-500 to-cyan-500';
+      case 'coding': return 'from-emerald-500 to-green-500';
       case 'core': return 'from-orange-500 to-red-500';
       case 'hr': return 'from-purple-500 to-pink-500';
-      default: return 'from-gray-500 to-slate-500';
+      default: return 'from-white/20 to-white/10';
     }
   };
 
@@ -167,14 +165,14 @@ const Interview = () => {
         className="space-y-6"
       >
         <div className="flex justify-between items-center">
-          <span className="text-gray-500 dark:text-slate-400">Question {currentQuestion + 1} of {questions.length}</span>
+          <span className="text-white/40">Question {currentQuestion + 1} of {questions.length}</span>
           <div className={`px-4 py-2 rounded-xl bg-gradient-to-r ${getRoundColor('assessment')} text-white font-medium`}>
             Assessment Round
           </div>
         </div>
 
         <Card className="p-8">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-8">{q?.question}</h3>
+          <h3 className="font-serif text-xl text-white mb-8">{q?.question}</h3>
           
           <div className="space-y-3">
             {q?.options?.map((opt, i) => (
@@ -184,16 +182,16 @@ const Interview = () => {
                 whileTap={{ scale: 0.99 }}
                 onClick={() => handleAnswer(opt)}
                 disabled={submitting}
-                className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${
+                className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-300 ${
                   answers[currentQuestion] === opt
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-slate-600 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-700/50'
+                    ? 'border-violet-500 bg-violet-500/10'
+                    : 'border-white/10 hover:border-white/30 hover:bg-white/[0.02]'
                 }`}
               >
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-700 mr-3 text-sm font-semibold">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/10 mr-3 text-sm font-medium">
                   {String.fromCharCode(65 + i)}
                 </span>
-                {opt}
+                <span className="text-white/80">{opt}</span>
               </motion.button>
             ))}
           </div>
@@ -201,23 +199,28 @@ const Interview = () => {
 
         <div className="flex gap-4">
           {currentQuestion > 0 && (
-            <Button
-              variant="outline"
+            <button
               onClick={() => setCurrentQuestion(currentQuestion - 1)}
-              icon={ArrowLeft}
+              className="py-3 px-6 rounded-xl border border-white/10 text-white hover:bg-white/5 transition-colors flex items-center gap-2"
             >
+              <ArrowLeft className="w-5 h-5" />
               Previous
-            </Button>
+            </button>
           )}
-          <Button
+          <button
             onClick={() => handleAnswer(answers[currentQuestion] || q?.options?.[0])}
             disabled={submitting || !answers[currentQuestion]}
-            className="flex-1"
-            icon={submitting ? Loader2 : Send}
-            loading={submitting}
+            className="flex-1 py-3 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            Submit Answer
-          </Button>
+            {submitting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <Send className="w-5 h-5" />
+                Submit Answer
+              </>
+            )}
+          </button>
         </div>
       </motion.div>
     );
@@ -235,51 +238,55 @@ const Interview = () => {
         className="space-y-6"
       >
         <div className="flex justify-between items-center">
-          <span className="text-gray-500 dark:text-slate-400">Problem {currentQuestion + 1} of {questions.length}</span>
+          <span className="text-white/40">Problem {currentQuestion + 1} of {questions.length}</span>
           <div className={`px-4 py-2 rounded-xl bg-gradient-to-r ${getRoundColor('coding')} text-white font-medium`}>
             Coding Round
           </div>
         </div>
 
         <Card className="p-8">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">{q?.question}</h3>
+          <h3 className="font-serif text-xl text-white mb-6">{q?.question}</h3>
           
           <div className="mb-6">
-            <Select
-              label="Language"
+            <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">Language</label>
+            <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              options={[
-                { value: 'javascript', label: 'JavaScript' },
-                { value: 'python', label: 'Python' },
-                { value: 'java', label: 'Java' },
-                { value: 'cpp', label: 'C++' },
-                { value: 'c', label: 'C' }
-              ]}
-            />
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:border-violet-500/50 focus:outline-none transition-colors"
+            >
+              <option value="javascript" className="bg-[#030303]">JavaScript</option>
+              <option value="python" className="bg-[#030303]">Python</option>
+              <option value="java" className="bg-[#030303]">Java</option>
+              <option value="cpp" className="bg-[#030303]">C++</option>
+              <option value="c" className="bg-[#030303]">C</option>
+            </select>
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Your Solution</label>
+            <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">Your Solution</label>
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
               rows={15}
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-slate-900 text-gray-100 font-mono text-sm"
+              className="w-full px-4 py-3 rounded-xl bg-black/50 border border-white/10 text-white font-mono text-sm placeholder-white/20"
               placeholder="// Write your code here..."
             />
           </div>
 
-          <Button
+          <button
             onClick={() => { handleAnswer({ code, language, output: '' }); setCode(''); }}
             disabled={submitting || !code}
-            variant="success"
-            className="w-full"
-            icon={submitting ? Loader2 : Send}
-            loading={submitting}
+            className="w-full py-3 rounded-xl bg-emerald-500 text-white font-medium hover:bg-emerald-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            Submit Solution
-          </Button>
+            {submitting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <Send className="w-5 h-5" />
+                Submit Solution
+              </>
+            )}
+          </button>
         </Card>
       </motion.div>
     );
@@ -298,45 +305,47 @@ const Interview = () => {
         className="space-y-6"
       >
         <div className="flex justify-between items-center">
-          <span className="text-gray-500 dark:text-slate-400">Question {currentQuestion + 1} of {questions.length}</span>
+          <span className="text-white/40">Question {currentQuestion + 1} of {questions.length}</span>
           <div className={`px-4 py-2 rounded-xl bg-gradient-to-r ${getRoundColor(round)} text-white font-medium`}>
             {round === 'core' ? 'Core Round' : 'HR Round'}
           </div>
         </div>
 
         <Card className="p-8">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">{q?.question}</h3>
+          <h3 className="font-serif text-xl text-white mb-6">{q?.question}</h3>
           
           {isHR && (
-            <div className="mb-6 p-4 rounded-xl bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-yellow-600" />
-                <p className="text-sm text-yellow-800 dark:text-yellow-300">Tip: Start with your introduction and be confident!</p>
-              </div>
+            <div className="mb-6 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-yellow-400" />
+              <p className="text-sm text-yellow-400/80">Tip: Start with your introduction and be confident!</p>
             </div>
           )}
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">Your Answer</label>
+            <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">Your Answer</label>
             <textarea
               value={subjectiveAnswer}
               onChange={(e) => setSubjectiveAnswer(e.target.value)}
               rows={8}
-              className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500/50 focus:outline-none transition-colors"
               placeholder="Type your answer here..."
             />
           </div>
 
-          <Button
+          <button
             onClick={() => { handleAnswer(subjectiveAnswer); setSubjectiveAnswer(''); }}
             disabled={submitting || !subjectiveAnswer}
-            variant={isHR ? 'secondary' : 'primary'}
-            className="w-full"
-            icon={submitting ? Loader2 : Send}
-            loading={submitting}
+            className="w-full py-3 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
-            Submit Answer
-          </Button>
+            {submitting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <Send className="w-5 h-5" />
+                Submit Answer
+              </>
+            )}
+          </button>
         </Card>
       </motion.div>
     );
@@ -344,10 +353,10 @@ const Interview = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-[#030303]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-slate-400">Loading interview...</p>
+          <div className="w-16 h-16 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60">Loading interview...</p>
         </div>
       </div>
     );
@@ -355,9 +364,9 @@ const Interview = () => {
 
   if (!interview) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-[#030303]">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-slate-400">Interview not found</p>
+          <p className="text-white/40">Interview not found</p>
         </div>
       </div>
     );
@@ -367,24 +376,28 @@ const Interview = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-50 dark:bg-slate-900 p-4 md:p-8"
+      className="min-h-screen bg-[#030303] p-4 md:p-8"
     >
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="font-serif text-2xl text-white">
               {interview.type === 'cse' ? 'CSE/IT' : `Non-CSE (${interview.stream})`} Interview
             </h1>
-            <p className="text-gray-500 dark:text-slate-400">Difficulty: {interview.difficulty}</p>
+            <p className="text-white/40 capitalize">Difficulty: {interview.difficulty}</p>
           </div>
-          <Button
-            variant={showCamera ? 'danger' : 'outline'}
+          <button
             onClick={() => setShowCamera(!showCamera)}
-            icon={showCamera ? CameraOff : Camera}
+            className={`py-2 px-4 rounded-xl border transition-colors flex items-center gap-2 ${
+              showCamera 
+                ? 'bg-red-500/20 border-red-500/30 text-red-400' 
+                : 'border-white/10 text-white/60 hover:text-white hover:bg-white/5'
+            }`}
           >
-            {showCamera ? 'Stop Camera' : 'Enable Camera'}
-          </Button>
+            {showCamera ? <CameraOff className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
+            <span>{showCamera ? 'Stop Camera' : 'Enable Camera'}</span>
+          </button>
         </div>
 
         {/* Camera Preview */}
@@ -394,7 +407,7 @@ const Interview = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="rounded-2xl overflow-hidden shadow-lg"
+              className="rounded-2xl overflow-hidden"
             >
               <video
                 ref={videoRef}

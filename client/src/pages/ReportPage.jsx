@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   ArrowLeft, Clock, Shield, Eye, MessageSquare, TrendingUp, 
   AlertTriangle, CheckCircle2, BookOpen, MessageCircle, PlayCircle, 
-  Target, Award
+  Target, Award, BarChart3
 } from 'lucide-react';
 import { reportAPI } from '../utils/api';
 import Card from '../components/ui/Card';
@@ -36,15 +36,15 @@ const ReportPage = () => {
   };
 
   const getScoreColor = (score) => {
-    if (score >= 80) return 'from-green-400 to-green-500';
-    if (score >= 60) return 'from-yellow-400 to-orange-500';
-    return 'from-red-400 to-red-500';
+    if (score >= 80) return 'from-emerald-500 to-green-500';
+    if (score >= 60) return 'from-yellow-500 to-orange-500';
+    return 'from-red-500 to-rose-500';
   };
 
   const getScoreLabel = (score) => {
     if (score >= 80) return 'Excellent';
     if (score >= 60) return 'Good';
-    if (score >= 40) return 'Needs Improvement';
+    if (score >= 40) return 'Needs Work';
     return 'Poor';
   };
 
@@ -57,26 +57,29 @@ const ReportPage = () => {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] } }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-12 h-12 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!report) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-slate-400">Report not found</p>
-          <Button variant="primary" onClick={() => navigate('/dashboard')} className="mt-4">
+          <p className="text-white/40 mb-4">Report not found</p>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-6 py-3 rounded-xl bg-white text-black font-medium hover:bg-white/90"
+          >
             Go to Dashboard
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -91,24 +94,24 @@ const ReportPage = () => {
     >
       {/* Back Button */}
       <motion.div variants={itemVariants}>
-        <Button 
-          variant="ghost" 
+        <button 
           onClick={() => navigate('/dashboard')}
-          icon={ArrowLeft}
+          className="flex items-center gap-2 text-white/50 hover:text-white transition-colors"
         >
-          Back to Dashboard
-        </Button>
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Dashboard</span>
+        </button>
       </motion.div>
 
       {/* Main Score Card */}
       <motion.div variants={itemVariants}>
         <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-cyan-500/10" />
           <div className="relative">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Interview Report</h1>
-                <p className="text-gray-500 dark:text-slate-400 mt-1">
+                <h1 className="font-serif text-3xl text-white">Interview Report</h1>
+                <p className="text-white/40 mt-1">
                   {new Date(report.generatedAt).toLocaleDateString('en-US', {
                     weekday: 'long',
                     year: 'numeric',
@@ -121,18 +124,18 @@ const ReportPage = () => {
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className={`inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-br ${getScoreColor(report.overallScore)} mb-2 shadow-lg`}
+                  className={`inline-flex items-center justify-center w-28 h-28 rounded-3xl bg-gradient-to-br ${getScoreColor(report.overallScore)} mb-3 violet-glow`}
                 >
-                  <span className="text-3xl font-bold text-white">{Math.round(report.overallScore)}</span>
+                  <span className="text-4xl font-serif text-white">{Math.round(report.overallScore)}</span>
                 </motion.div>
-                <div className={`px-4 py-1 rounded-full text-sm font-semibold bg-gradient-to-r ${getScoreColor(report.overallScore)} text-white`}>
+                <div className={`px-4 py-1.5 rounded-full text-sm font-medium bg-white/10 text-white`}>
                   {getScoreLabel(report.overallScore)}
                 </div>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-4 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${report.overallScore}%` }}
@@ -144,12 +147,12 @@ const ReportPage = () => {
         </Card>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Round Breakdown */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <Card>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-              <Target className="w-5 h-5 text-blue-500" />
+            <h2 className="font-serif text-xl text-white mb-6 flex items-center gap-3">
+              <Target className="w-5 h-5 text-violet-400" />
               Round Breakdown
             </h2>
             
@@ -157,16 +160,16 @@ const ReportPage = () => {
               {/* Assessment */}
               <motion.div 
                 whileHover={{ scale: 1.02 }}
-                className="p-5 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800"
+                className="p-5 rounded-2xl bg-white/[0.02] border border-white/5"
               >
                 <div className="flex justify-between items-center mb-3">
-                  <span className="font-semibold text-gray-900 dark:text-white">Assessment</span>
-                  <span className="text-2xl font-bold text-blue-600">{Math.round(report.roundBreakdown.assessment?.score || 0)}%</span>
+                  <span className="font-medium text-white">Assessment</span>
+                  <span className="text-2xl font-serif text-white">{Math.round(report.roundBreakdown.assessment?.score || 0)}%</span>
                 </div>
-                <div className="w-full h-2 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden mb-2">
-                  <div className="h-full bg-blue-500" style={{ width: `${report.roundBreakdown.assessment?.score || 0}%` }} />
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-2">
+                  <div className="h-full bg-violet-500" style={{ width: `${report.roundBreakdown.assessment?.score || 0}%` }} />
                 </div>
-                <p className="text-sm text-gray-500 dark:text-slate-400">
+                <p className="text-sm text-white/40">
                   {report.roundBreakdown.assessment?.correctAnswers || 0}/15 correct
                 </p>
               </motion.div>
@@ -174,20 +177,20 @@ const ReportPage = () => {
               {/* Coding/Core */}
               <motion.div 
                 whileHover={{ scale: 1.02 }}
-                className="p-5 rounded-2xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800"
+                className="p-5 rounded-2xl bg-white/[0.02] border border-white/5"
               >
                 <div className="flex justify-between items-center mb-3">
-                  <span className="font-semibold text-gray-900 dark:text-white">
+                  <span className="font-medium text-white">
                     {report.roundBreakdown.coding ? 'Coding' : 'Core'}
                   </span>
-                  <span className="text-2xl font-bold text-green-600">
+                  <span className="text-2xl font-serif text-white">
                     {Math.round((report.roundBreakdown.coding?.score || report.roundBreakdown.core?.score || 0))}%
                   </span>
                 </div>
-                <div className="w-full h-2 bg-green-200 dark:bg-green-800 rounded-full overflow-hidden mb-2">
-                  <div className="h-full bg-green-500" style={{ width: `${report.roundBreakdown.coding?.score || report.roundBreakdown.core?.score || 0}%` }} />
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-2">
+                  <div className="h-full bg-cyan-500" style={{ width: `${report.roundBreakdown.coding?.score || report.roundBreakdown.core?.score || 0}%` }} />
                 </div>
-                <p className="text-sm text-gray-500 dark:text-slate-400">
+                <p className="text-sm text-white/40">
                   {report.roundBreakdown.coding?.solved || report.roundBreakdown.core?.totalQuestions || 0} questions
                 </p>
               </motion.div>
@@ -195,16 +198,16 @@ const ReportPage = () => {
               {/* HR Round */}
               <motion.div 
                 whileHover={{ scale: 1.02 }}
-                className="p-5 rounded-2xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 md:col-span-2"
+                className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 md:col-span-2"
               >
                 <div className="flex justify-between items-center mb-3">
-                  <span className="font-semibold text-gray-900 dark:text-white">HR Round</span>
-                  <span className="text-2xl font-bold text-purple-600">{Math.round(report.roundBreakdown.hr?.score || 0)}%</span>
+                  <span className="font-medium text-white">HR Round</span>
+                  <span className="text-2xl font-serif text-white">{Math.round(report.roundBreakdown.hr?.score || 0)}%</span>
                 </div>
-                <div className="w-full h-2 bg-purple-200 dark:bg-purple-800 rounded-full overflow-hidden mb-2">
-                  <div className="h-full bg-purple-500" style={{ width: `${report.roundBreakdown.hr?.score || 0}%` }} />
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-2">
+                  <div className="h-full bg-emerald-500" style={{ width: `${report.roundBreakdown.hr?.score || 0}%` }} />
                 </div>
-                <p className="text-sm text-gray-500 dark:text-slate-400">
+                <p className="text-sm text-white/40">
                   Confidence: {Math.round(report.roundBreakdown.hr?.confidence || 0)}%
                 </p>
               </motion.div>
@@ -213,58 +216,57 @@ const ReportPage = () => {
         </motion.div>
 
         {/* Sidebar Stats */}
-        <div className="space-y-6">
-          {/* Time & Stats */}
+        <div className="space-y-4">
           <motion.div variants={itemVariants}>
             <Card>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-blue-500" />
-                Time & Stats
+              <h3 className="font-medium text-white mb-4 flex items-center gap-3">
+                <Clock className="w-5 h-5 text-violet-400" />
+                Stats
               </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50">
-                  <span className="text-gray-600 dark:text-slate-400">Time on Platform</span>
-                  <span className="font-semibold text-gray-900 dark:text-white">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 rounded-xl bg-white/[0.02]">
+                  <span className="text-white/50">Time</span>
+                  <span className="font-medium text-white">
                     {Math.floor((report.timeOnPlatform || 0) / 60)}m {(report.timeOnPlatform || 0) % 60}s
                   </span>
                 </div>
-                <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50 dark:bg-slate-700/50">
-                  <span className="text-gray-600 dark:text-slate-400">Cheating Probability</span>
-                  <span className={`font-semibold ${
-                    report.cheatingProbability < 30 ? 'text-green-600' :
-                    report.cheatingProbability < 60 ? 'text-yellow-600' : 'text-red-600'
+                <div className="flex justify-between items-center p-3 rounded-xl bg-white/[0.02]">
+                  <span className="text-white/50">Integrity</span>
+                  <span className={`font-medium ${
+                    report.cheatingProbability < 30 ? 'text-emerald-400' :
+                    report.cheatingProbability < 60 ? 'text-yellow-400' : 'text-red-400'
                   }`}>
-                    {report.cheatingProbability || 0}%
+                    {(100 - (report.cheatingProbability || 0))}%
                   </span>
                 </div>
               </div>
             </Card>
           </motion.div>
 
-          {/* Behavioral Insights */}
+          {/* Behavioral */}
           <motion.div variants={itemVariants}>
             <Card>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Eye className="w-5 h-5 text-purple-500" />
-                Behavioral Insights
+              <h3 className="font-medium text-white mb-4 flex items-center gap-3">
+                <Eye className="w-5 h-5 text-cyan-400" />
+                Analysis
               </h3>
               <div className="space-y-4">
                 {[
-                  { label: 'Eye Contact', value: report.behavioralInsights?.eyeContact || 0, color: 'blue' },
-                  { label: 'Confidence', value: report.behavioralInsights?.confidence || 0, color: 'green' },
-                  { label: 'Clarity', value: report.behavioralInsights?.clarity || 0, color: 'purple' }
+                  { label: 'Eye Contact', value: report.behavioralInsights?.eyeContact || 0 },
+                  { label: 'Confidence', value: report.behavioralInsights?.confidence || 0 },
+                  { label: 'Clarity', value: report.behavioralInsights?.clarity || 0 }
                 ].map((item) => (
                   <div key={item.label}>
                     <div className="flex justify-between mb-2">
-                      <span className="text-sm text-gray-600 dark:text-slate-400">{item.label}</span>
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">{item.value}%</span>
+                      <span className="text-sm text-white/50">{item.label}</span>
+                      <span className="text-sm font-medium text-white">{item.value}%</span>
                     </div>
-                    <div className="w-full h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${item.value}%` }}
                         transition={{ duration: 0.5, delay: 0.5 }}
-                        className={`h-full bg-gradient-to-r from-${item.color}-400 to-${item.color}-500`}
+                        className="h-full bg-gradient-to-r from-violet-500 to-cyan-500"
                       />
                     </div>
                   </div>
@@ -276,11 +278,11 @@ const ReportPage = () => {
       </div>
 
       {/* Strengths & Weak Areas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <motion.div variants={itemVariants}>
           <Card className="h-full">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Award className="w-5 h-5 text-green-500" />
+            <h2 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
+              <Award className="w-5 h-5 text-emerald-400" />
               Strengths
             </h2>
             <div className="space-y-3">
@@ -291,16 +293,16 @@ const ReportPage = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-green-50 dark:bg-green-900/20"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/5"
                   >
-                    <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                      <CheckCircle2 className="w-4 h-4 text-white" />
+                    <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                     </div>
-                    <span className="text-gray-700 dark:text-slate-300">{strength}</span>
+                    <span className="text-white/70 text-sm">{strength}</span>
                   </motion.div>
                 ))
               ) : (
-                <p className="text-gray-500 dark:text-slate-400 text-center py-4">No strengths identified yet</p>
+                <p className="text-white/30 text-center py-4">No strengths identified</p>
               )}
             </div>
           </Card>
@@ -308,9 +310,9 @@ const ReportPage = () => {
 
         <motion.div variants={itemVariants}>
           <Card className="h-full">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-yellow-500" />
-              Weak Areas
+            <h2 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-400" />
+              Areas to Improve
             </h2>
             <div className="space-y-3">
               {report.weakAreas?.length > 0 ? (
@@ -320,16 +322,16 @@ const ReportPage = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-3 p-4 rounded-xl bg-yellow-50 dark:bg-yellow-900/20"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-yellow-500/5"
                   >
-                    <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
-                      <AlertTriangle className="w-4 h-4 text-white" />
+                    <div className="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                      <AlertTriangle className="w-3 h-3 text-yellow-400" />
                     </div>
-                    <span className="text-gray-700 dark:text-slate-300">{area}</span>
+                    <span className="text-white/70 text-sm">{area}</span>
                   </motion.div>
                 ))
               ) : (
-                <p className="text-gray-500 dark:text-slate-400 text-center py-4">No weak areas identified</p>
+                <p className="text-white/30 text-center py-4">No weak areas identified</p>
               )}
             </div>
           </Card>
@@ -339,8 +341,8 @@ const ReportPage = () => {
       {/* Suggestions */}
       <motion.div variants={itemVariants}>
         <Card>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-blue-500" />
+          <h2 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
+            <TrendingUp className="w-5 h-5 text-cyan-400" />
             Suggestions
           </h2>
           <div className="space-y-3">
@@ -351,16 +353,16 @@ const ReportPage = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-3 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20"
+                  className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.02]"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-sm">→</span>
+                  <div className="w-5 h-5 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs">→</span>
                   </div>
-                  <span className="text-gray-700 dark:text-slate-300">{suggestion}</span>
+                  <span className="text-white/70 text-sm">{suggestion}</span>
                 </motion.div>
               ))
             ) : (
-              <p className="text-gray-500 dark:text-slate-400 text-center py-4">No suggestions available</p>
+              <p className="text-white/30 text-center py-4">No suggestions available</p>
             )}
           </div>
         </Card>
@@ -369,10 +371,10 @@ const ReportPage = () => {
       {/* Learning Path */}
       {report.aiRecommendations?.learningPath?.length > 0 && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-blue-600 to-purple-600 text-white border-0">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
-              Personalized Learning Path
+          <Card className="bg-gradient-to-br from-violet-500/20 to-cyan-500/20 border-violet-500/20">
+            <h2 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
+              <BookOpen className="w-5 h-5 text-white" />
+              Learning Path
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {report.aiRecommendations.learningPath.map((item, i) => (
@@ -381,16 +383,16 @@ const ReportPage = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4"
+                  className="bg-white/5 rounded-xl p-4"
                 >
-                  <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
-                    item.priority === 'high' ? 'bg-red-500' :
-                    item.priority === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
+                  <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-3 ${
+                    item.priority === 'high' ? 'bg-red-500/20 text-red-400' :
+                    item.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-emerald-500/20 text-emerald-400'
                   }`}>
-                    {item.priority} priority
+                    {item.priority}
                   </div>
-                  <h3 className="font-semibold mb-2">{item.topic}</h3>
-                  <ul className="text-sm opacity-90 space-y-1">
+                  <h3 className="font-medium text-white mb-2">{item.topic}</h3>
+                  <ul className="text-sm text-white/50 space-y-1">
                     {item.resources?.map((r, j) => (
                       <li key={j} className="flex items-center gap-1">
                         <span>•</span> {r}
@@ -406,23 +408,20 @@ const ReportPage = () => {
 
       {/* Action Buttons */}
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
-        <Button 
+        <button 
           onClick={() => navigate('/home')}
-          className="flex-1"
-          icon={PlayCircle}
-          size="lg"
+          className="flex-1 py-4 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-colors flex items-center justify-center gap-2"
         >
-          Start New Interview
-        </Button>
-        <Button 
-          variant="secondary"
+          <PlayCircle className="w-5 h-5" />
+          <span>Start New Interview</span>
+        </button>
+        <button 
           onClick={() => navigate('/ai-chat')}
-          className="flex-1"
-          icon={MessageCircle}
-          size="lg"
+          className="flex-1 py-4 rounded-xl border border-white/10 text-white hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
         >
-          Chat with AI Coach
-        </Button>
+          <MessageCircle className="w-5 h-5" />
+          <span>Chat with AI Coach</span>
+        </button>
       </motion.div>
     </motion.div>
   );

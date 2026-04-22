@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Home from './pages/Home';
@@ -18,10 +19,10 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-[#030303]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-slate-400">Loading...</p>
+          <div className="w-16 h-16 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60">Loading...</p>
         </div>
       </div>
     );
@@ -30,27 +31,30 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" replace />;
 };
 
-const PublicRoute = ({ children }) => {
+const AuthRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-900">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#030303]">
+        <div className="w-16 h-16 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
   
-  return !user ? children : <Navigate to="/home" replace />;
+  return user ? <Navigate to="/home" replace /> : children;
 };
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-      <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+      {/* Public Routes - Landing page is default */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<AuthRoute><Login /></AuthRoute>} />
+      <Route path="/register" element={<AuthRoute><Register /></AuthRoute>} />
+      
+      {/* Protected Routes */}
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route index element={<Navigate to="/home" replace />} />
         <Route path="home" element={<Home />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="learning" element={<Learning />} />
@@ -60,6 +64,7 @@ function AppRoutes() {
         <Route path="interview/:id" element={<Interview />} />
         <Route path="report/:id" element={<ReportPage />} />
       </Route>
+      
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

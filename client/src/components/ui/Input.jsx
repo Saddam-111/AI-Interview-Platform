@@ -19,13 +19,13 @@ const Input = forwardRef(({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+        <label className="block text-xs uppercase tracking-widest text-white/40 mb-2">
           {label}
         </label>
       )}
       <div className="relative">
         {Icon && (
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
             <Icon className="w-5 h-5" />
           </div>
         )}
@@ -33,18 +33,17 @@ const Input = forwardRef(({
           ref={ref}
           type={inputType}
           className={`
-            w-full px-4 py-3 ${Icon ? 'pl-12' : ''} ${isPassword || type === 'email' ? 'pr-12' : ''}
-            bg-white dark:bg-slate-800
-            border-2 rounded-xl
-            text-gray-900 dark:text-white
-            placeholder-gray-400 dark:placeholder-slate-500
-            transition-all duration-200
+            w-full px-4 py-3 ${Icon ? 'pl-12' : ''} ${isPassword ? 'pr-12' : ''}
+            bg-white/5 rounded-xl
+            border border-white/10
+            text-white placeholder-white/30
+            transition-all duration-300
             focus:outline-none
             ${error 
-              ? 'border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/20' 
+              ? 'border-red-500/50 focus:border-red-500/50' 
               : isFocused 
-                ? 'border-blue-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20' 
-                : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500'
+                ? 'border-violet-500/50 bg-white/[0.08]' 
+                : 'hover:border-white/20'
             }
             ${className}
           `}
@@ -56,7 +55,7 @@ const Input = forwardRef(({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/50 transition-colors"
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
@@ -66,7 +65,7 @@ const Input = forwardRef(({
         <motion.p 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-2 text-sm text-red-500"
+          className="mt-2 text-sm text-red-400"
         >
           {error}
         </motion.p>

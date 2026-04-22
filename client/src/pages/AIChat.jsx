@@ -1,26 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Zap, MessageSquare, FileText, Code, User } from 'lucide-react';
+import { Lightbulb, Zap, MessageSquare, FileText, Code, User, Send, Bot } from 'lucide-react';
 import { aiAPI } from '../utils/api';
 import Card from '../components/ui/Card';
-import AIChatInterface from '../components/ui/AIChatInterface';
 
 const AIChat = () => {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Hello! I\'m your AI interview coach. Ask me anything about interviews, practice questions, or get tips to improve your skills!' }
+    { role: 'assistant', content: "Hello! I'm your AI interview coach. Ask me anything about interviews, practice questions, or get tips to improve your skills!" }
   ]);
   const [loading, setLoading] = useState(false);
+  const [input, setInput] = useState('');
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    // Transform messages for AIChatInterface format
-  }, []);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-  const handleSendMessage = async (input) => {
+  const handleSendMessage = async () => {
+    if (!input.trim() || loading) return;
+    
     setMessages(prev => [...prev, { role: 'user', content: input }]);
+    const userInput = input;
+    setInput('');
     setLoading(true);
 
     try {
-      const res = await aiAPI.chat({ messages, userMessage: input });
+      const res = await aiAPI.chat({ messages, userMessage: userInput });
       if (res.data.success) {
         const responseText = typeof res.data.response === 'string' 
           ? res.data.response 
@@ -50,8 +55,8 @@ const AIChat = () => {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] } }
   };
 
   return (
@@ -59,81 +64,123 @@ const AIChat = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-6 h-[calc(100vh-8rem)] flex flex-col"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">AI Interview Coach</h1>
-        <p className="text-gray-500 dark:text-slate-400 mt-1">Get personalized guidance and tips for your interviews</p>
+        <h1 className="font-serif text-3xl text-white mb-2">AI Interview Coach</h1>
+        <p className="text-white/40">Get personalized guidance and tips</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1">
         {/* Chat Area */}
-        <motion.div variants={itemVariants} className="lg:col-span-3">
-          <AIChatInterface
-            messages={messages}
-            onSendMessage={handleSendMessage}
-            loading={loading}
-            title="AI Interview Coach"
-            placeholder="Ask me anything about interviews, jobs, or career..."
-          />
+        <motion.div variants={itemVariants} className="lg:col-span-3 flex flex-col">
+          <Card className="flex-1 flex flex-col overflow-hidden">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[80%] p-4 rounded-2xl ${
+                    msg.role === 'user' 
+                      ? 'bg-violet-500/20 text-white' 
+                      : 'bg-white/[0.02] text-white/80'
+                  }`}>
+                    {msg.role === 'assistant' && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center">
+                          <Bot className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-xs text-violet-400">AI Coach</span>
+                      </div>
+                    )}
+                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex justify-start"
+                >
+                  <div className="bg-white/[0.02] p-4 rounded-2xl">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <div className="w-2 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <div className="w-2 h-2 bg-white/30 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input */}
+            <div className="p-4 border-t border-white/5">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="Ask me anything about interviews..."
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500/50 focus:outline-none transition-colors"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={loading || !input.trim()}
+                  className="p-4 rounded-xl bg-white text-black hover:bg-white/90 transition-colors disabled:opacity-50"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </Card>
         </motion.div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Quick Actions */}
           <motion.div variants={itemVariants}>
             <Card>
-              <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-blue-500" />
+              <h3 className="font-medium text-white mb-4 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-violet-400" />
                 Quick Actions
               </h3>
               <div className="space-y-2">
                 {quickActions.map((action, i) => (
-                  <motion.button
+                  <button
                     key={i}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleSendMessage(action.prompt)}
+                    onClick={() => {
+                      setInput(action.prompt);
+                    }}
                     disabled={loading}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors text-sm"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.02] text-white/60 hover:text-white hover:bg-white/[0.05] transition-colors text-sm"
                   >
-                    <action.icon className="w-4 h-4 text-blue-500" />
+                    <action.icon className="w-4 h-4 text-violet-400" />
                     {action.label}
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </Card>
           </motion.div>
 
-          {/* Tips Card */}
+          {/* Tips */}
           <motion.div variants={itemVariants}>
-            <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-200 dark:border-blue-800">
+            <Card className="bg-gradient-to-br from-violet-500/10 to-cyan-500/10 border-violet-500/20">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
                   <Lightbulb className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Pro Tip</h4>
-                  <p className="text-sm text-gray-600 dark:text-slate-400">
+                  <h4 className="font-medium text-white mb-1">Pro Tip</h4>
+                  <p className="text-sm text-white/50">
                     Be specific with your questions for better answers. Ask about specific roles, companies, or scenarios!
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Resume Context */}
-          <motion.div variants={itemVariants}>
-            <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-1">Resume Linked</h4>
-                  <p className="text-sm text-gray-600 dark:text-slate-400">
-                    I can answer questions about your uploaded resume. Try asking me to explain your projects!
                   </p>
                 </div>
               </div>

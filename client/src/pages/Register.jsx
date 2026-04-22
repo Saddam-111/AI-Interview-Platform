@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Bot, ArrowRight } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
-import Select from '../components/ui/Select';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +18,6 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
-  const { theme } = useTheme();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -65,152 +62,215 @@ const Register = () => {
     setLoading(false);
   };
 
+  const streams = [
+    { value: 'mechanical', label: 'Mechanical' },
+    { value: 'civil', label: 'Civil' },
+    { value: 'electrical', label: 'Electrical' },
+    { value: 'electronics', label: 'Electronics' },
+    { value: 'other', label: 'Other' }
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-50 dark:bg-slate-900 py-8">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#030303] py-12">
       {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl" />
-        <div className={`absolute inset-0 bg-grid-pattern opacity-50 ${theme === 'dark' ? 'opacity-30' : ''}`} />
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="orb w-[500px] h-[500px] bg-violet-500/20 blur-[100px] absolute top-1/4 -left-1/4"
+        />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="orb w-[400px] h-[400px] bg-cyan-500/15 blur-[80px] absolute bottom-1/4 right-1/4"
+        />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="orb w-[350px] h-[350px] bg-violet-500/10 blur-[60px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        />
       </div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative w-full max-w-md px-4"
+        transition={{ duration: 0.6 }}
+        className="relative w-full max-w-md px-6"
       >
         {/* Logo */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-center mb-6"
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="text-center mb-8"
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 mb-4 shadow-lg shadow-purple-500/30">
-            <Bot className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold gradient-text">AI Interview</h1>
-          <p className="text-gray-500 dark:text-slate-400 mt-1">Platform</p>
+          <Link to="/" className="inline-flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500" />
+            <span className="font-serif text-2xl text-white">Synapse</span>
+          </Link>
+          <h1 className="font-serif text-4xl text-white mb-2">Create Account</h1>
+          <p className="text-white/40 text-sm">Start your interview preparation journey</p>
         </motion.div>
 
         {/* Register Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-3xl p-8 border border-gray-100 dark:border-slate-700 shadow-xl"
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="glass rounded-3xl p-8"
         >
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Create Account</h2>
-            <p className="text-gray-500 dark:text-slate-400 text-sm mt-1">Start your interview preparation journey</p>
-          </div>
-          
           {error && (
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl mb-6 text-sm"
+              className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl mb-6 text-sm"
             >
               {error}
             </motion.div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Full Name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleChange}
-              icon={User}
-              placeholder="John Doe"
-              required
-            />
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                required
+                className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500/50 focus:outline-none transition-colors"
+              />
+            </div>
 
-            <Input
-              label="Email Address"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              icon={Mail}
-              placeholder="you@example.com"
-              required
-            />
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="you@example.com"
+                required
+                className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500/50 focus:outline-none transition-colors"
+              />
+            </div>
 
-            <Input
-              label="Password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              icon={Lock}
-              placeholder="••••••••"
-              required
-            />
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500/50 focus:outline-none transition-colors"
+              />
+            </div>
 
-            <Input
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              icon={Lock}
-              placeholder="••••••••"
-              required
-            />
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                required
+                className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-violet-500/50 focus:outline-none transition-colors"
+              />
+            </div>
 
             {/* Role Selection */}
-            <Select
-              label="I am a"
-              name="role"
-              value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              options={[
-                { value: 'cse', label: 'CSE/IT Student' },
-                { value: 'non-cse', label: 'Non-CSE (Engineering)' }
-              ]}
-            />
+            <div>
+              <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">
+                I am a
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: 'cse' })}
+                  className={`py-4 rounded-xl border-2 transition-all duration-300 ${
+                    formData.role === 'cse'
+                      ? 'border-violet-500 bg-violet-500/10'
+                      : 'border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <span className="text-white font-medium">CSE/IT</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: 'non-cse' })}
+                  className={`py-4 rounded-xl border-2 transition-all duration-300 ${
+                    formData.role === 'non-cse'
+                      ? 'border-violet-500 bg-violet-500/10'
+                      : 'border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <span className="text-white font-medium">Non-CSE</span>
+                </button>
+              </div>
+            </div>
 
-            {/* Stream Selection (only for non-cse) */}
+            {/* Stream Selection */}
             {formData.role === 'non-cse' && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
               >
-                <Select
-                  label="Stream"
+                <label className="block text-xs uppercase tracking-widest text-white/40 mb-3">
+                  Stream
+                </label>
+                <select
                   name="stream"
                   value={formData.stream}
-                  onChange={(e) => setFormData({ ...formData, stream: e.target.value })}
-                  placeholder="Select your stream"
-                  options={[
-                    { value: 'mechanical', label: 'Mechanical Engineering' },
-                    { value: 'civil', label: 'Civil Engineering' },
-                    { value: 'electrical', label: 'Electrical Engineering' },
-                    { value: 'electronics', label: 'Electronics Engineering' },
-                    { value: 'other', label: 'Other' }
-                  ]}
-                />
+                  onChange={handleChange}
+                  className="w-full px-4 py-4 rounded-xl bg-white/5 border border-white/10 text-white focus:border-violet-500/50 focus:outline-none transition-colors"
+                >
+                  <option value="" className="bg-[#030303]">Select your stream</option>
+                  {streams.map((stream) => (
+                    <option key={stream.value} value={stream.value} className="bg-[#030303]">
+                      {stream.label}
+                    </option>
+                  ))}
+                </select>
               </motion.div>
             )}
 
-            <Button
+            <button
               type="submit"
-              loading={loading}
-              className="w-full mt-2"
-              icon={ArrowRight}
+              disabled={loading}
+              className="w-full mt-4 py-4 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
             >
-              Create Account
-            </Button>
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-500 dark:text-slate-400">
+            <p className="text-white/40">
               Already have an account?{' '}
               <Link 
                 to="/login" 
-                className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
+                className="text-white/60 hover:text-white transition-colors"
               >
                 Sign In
               </Link>
@@ -219,8 +279,8 @@ const Register = () => {
         </motion.div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-400 dark:text-slate-500 mt-6">
-          © 2024 AI Interview Platform. All rights reserved.
+        <p className="text-center text-sm text-white/20 mt-8">
+          © 2024 Synapse. All rights reserved.
         </p>
       </motion.div>
     </div>
